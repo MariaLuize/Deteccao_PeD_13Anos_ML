@@ -2,7 +2,7 @@
 As praias arenosas que compõem a Zona Costeira Brasileira (ZCB) são de vital importância ambiental e econômica, mantendo populações humanas e conservando biodiversidades. Tais estruturas sofrem impactos primários de ordem tanto antropológica quanto natural. À vista disso, o projeto MapBiomas Brasil é um grande ator na detecção de Praias e Dunas (PeD) ao longo de séries temporais que crescem conforme o avanço de suas coleções publicadas. Diante disso, este trabalho objetiva classificar a presença de PeD, adotando como referência os mapas binários publicados na coleção 4.1 do projeto supracitado, tendo em análise a região Sul federativa componente da ZCB. Ao qual é realizado por meio de uma metodologia, que se utiliza de Machine Learning cuja execução é feita inteiramente na plataforma Google Earth Engine, utilizando imagens provenientes do satélite Landsat 5. A série temporal analisada parte de 1985 a 1997. Ainda, há a aferição de acurácia entre os resultados obtidos neste trabalho, e a referência para os anos 1985, 1991 e 1997, por meio de matrizes de confusão, contrastando tais classificações com um dataset tido como especialista pelo projeto MapBiomas, uma vez que foi catalogado humanamente. Para 1985, a classificação obteve 96% de acurácia global (AG), e a referência, 95%. Em 1991, ambas atingiram 95% de AG, e em 1997, a classificação alcançou 96% de AG, e a referência, 94%. Em termos absolutos, foi verificada uma redução da área de PeD em cerca de 217 km², entre os anos 1985 e 1997.
 
 ## Script para Visualização dos Resultados (GEE)
-Visualização dos mapas binários finais e suas estatísticas: https://code.earthengine.google.com/51319edac2a0268ea71ad806e81f8e86
+Visualização dos mapas binários finais e suas estatísticas: https://code.earthengine.google.com/c3cc9fd00277fbbdfb0d6299fca9f44a
 
 ## Resultados
 * Mosaico Base
@@ -41,7 +41,7 @@ var table = ee.FeatureCollection("users/luizcf14/Artigo_Luize/ecossistemas_coste
 ```
 * BASIC CONFIGURATIONS
 ```javascript
-// Year selection
+// Year selection (FROM 1985 TO 1997)
 var year = 1985
 
 // Basic mosaic visualization
