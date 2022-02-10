@@ -2,7 +2,7 @@
 As praias arenosas que compõem a Zona Costeira Brasileira (ZCB) são de vital importância ambiental e econômica, mantendo populações humanas e conservando biodiversidades. Tais estruturas sofrem impactos primários de ordem tanto antropológica quanto natural. À vista disso, o projeto MapBiomas Brasil é um grande ator na detecção de Praias e Dunas (PeD) ao longo de séries temporais que crescem conforme o avanço de suas coleções publicadas. Diante disso, este trabalho objetiva classificar a presença de PeD, adotando como referência os mapas binários publicados na coleção 4.1 do projeto supracitado, tendo em análise a região Sul federativa componente da ZCB. Ao qual é realizado por meio de uma metodologia, que se utiliza de Machine Learning cuja execução é feita inteiramente na plataforma Google Earth Engine, utilizando imagens provenientes do satélite Landsat 5. A série temporal analisada parte de 1985 a 1997. Ainda, há a aferição de acurácia entre os resultados obtidos neste trabalho, e a referência para os anos 1985, 1991 e 1997, por meio de matrizes de confusão, contrastando tais classificações com um dataset tido como especialista pelo projeto MapBiomas, uma vez que foi catalogado humanamente. Para 1985, a classificação obteve 96% de acurácia global (AG), e a referência, 95%. Em 1991, ambas atingiram 95% de AG, e em 1997, a classificação alcançou 96% de AG, e a referência, 94%. Em termos absolutos, foi verificada uma redução da área de PeD em cerca de 217 km², entre os anos 1985 e 1997.
 
 ## Script para Visualização dos Resultados (GEE)
-Visualização dos mapas binários finais e suas estatísticas: https://code.earthengine.google.com/c3cc9fd00277fbbdfb0d6299fca9f44a
+Visualização dos mapas binários finais e suas estatísticas: https://code.earthengine.google.com/23d0f97141b6f4ce3a2e0ced59cf7269
 
 ## Resultados
 * Mosaico Base
@@ -44,6 +44,8 @@ var table = ee.FeatureCollection("users/luizcf14/Artigo_Luize/ecossistemas_coste
 // Year selection (FROM 1985 TO 1997)
 var year = 1985
 
+var south = ee.FeatureCollection('users/luizcf14/Brasil/estados').filterMetadata("regiao_id","equals","1");
+
 // Basic mosaic visualization
 // ATTENTION: PLEASE, DO NOT MODIFY THE FOLLOWING LINE
 var mosaic = ee.Image("projects/samm/SAMM/Mosaic/"+year+"_v2")
@@ -58,31 +60,15 @@ Map.addLayer(ee.Image(0),{palette:'FFFFFF'},'Blank',false)
 // ATTENTION: PLEASE, DO NOT MODIFY THE FOLLOWING LINES
 var merge = ee.Image('projects/mapbiomas-workspace/TRANSVERSAIS/ZONACOSTEIRA4_1-FT/'+year).eq(23).unmask(0)
 var displacedMergeMask = merge.focal_max(4).reproject('EPSG:4326', null, 30)
-merge = merge.updateMask(displacedMergeMask.eq(1)).unmask(0)
+merge = merge.updateMask(displacedMergeMask.eq(1)).unmask(0).clip(south);
 Map.addLayer(merge,{palette:['white','red'],min:0,max:1},'Reference Mapbiomas 4.1',false)
 ```
 
-* SORT POINTS
-```javascript
-var points = merge.stratifiedSample(10000,'classification',geometry,30,null,1,[0,1],[5000,5000],true,1,true)
-print(points.size())
-print(points.first())
-Map.addLayer(points,{},'Points',false)
-```
 * OUR BEACHES AND DUNES (B&D) CLASSIFICATION
 ```javascript
 // ATTENTION: PLEASE, DO NOT MODIFY THE FOLLOWING LINES
-var BD_Classification = ee.Image('projects/mapbiomas-workspace/TRANSVERSAIS/ZONACOSTEIRA5-FT/'+year+'-8')
-```
-* COMPARISON BETWEEN REFERENCE MAP (MapBiomas 4.1) AND B&D CLASSIFICATION
-```javascript
-points= points.map(function(feat){
-  return feat.set({'BD_Classification':BD_Classification.eq(23).reduceRegion(ee.Reducer.first(),feat.geometry(),30).get('classification')})
-})
-print(points.first())
-
+var BD_Classification = ee.Image('projects/mapbiomas-workspace/TRANSVERSAIS/ZONACOSTEIRA5-FT/'+year+'-8').clip(south);
 Map.addLayer(BD_Classification.mask(BD_Classification.eq(23)),{palette:'blue'},'B&D Classification',false)
-}
 ```
 
 * CORRELATIONS
@@ -107,7 +93,7 @@ Map.addLayer(changes.mask(changes.gt(0)),{palette:['000000','0000FF','00FF00','F
 
 * STATISTICS
 ```javascript
-var statesBR = ee.FeatureCollection('users/luizcf14/Brasil/estados')
+var statesBR = south;
  var changesPerState = statesBR.map(function(feat){
       var nochangesP = noChangeP.reduceRegion({reducer:ee.Reducer.sum(),geometry:feat.geometry(),scale:30,maxPixels:1e13})
       var nochangesN = noChangeN.reduceRegion({reducer:ee.Reducer.sum(),geometry:feat.geometry(),scale:30,maxPixels:1e13})
@@ -126,14 +112,21 @@ Export.table.toDrive(changesPerState,'changes_per_state_'+year+'_mapbiomas','res
 ```javascript
 Map.setCenter(-52.5052,-32.8429,12)
 ```
-
-* POINTS BASED STATS
+* POINTS BASED STATS (for years 1985, 1991 and 1997)
 ```javascript
-var errorM = points.errorMatrix('classification','BD_Classification')
-print('Error Matrix',errorM)
-print('O.A',errorM.accuracy())
-print('Kappa',errorM.kappa())
-print('Consumer',errorM.consumersAccuracy())
-print('Producers',errorM.producersAccuracy())
+var specialist = ee.FeatureCollection("users/MariaLuizeSolvedCurso/TCC/Ptc_Specialist/Pts_specialist_BaD_"+year);
+print('Quantity of specialist points: ',specialist.size())
+var cf = ee.ConfusionMatrix(specialist.errorMatrix('especialista', 'classified'))
+print("Confusion Matrix (New vs Specialist) ",cf)
+print('Accuracy (New vs Specialist)',cf.accuracy())
+print('Consumers Accuracy (New vs Specialist)',cf.consumersAccuracy())
+print('Producers Accuracy (New vs Specialist)',cf.producersAccuracy())
 
+print('---------------------------')
+
+var cf41 = ee.ConfusionMatrix(specialist.errorMatrix('especialista', 'classified41'))
+print('Confusion Matrix (4.1 vs Specialist)',cf41)
+print('Accuracy (4.1 vs Specialist)',cf41.accuracy())
+print('Consumers Accuracy (4.1 vs Specialist)',cf41.consumersAccuracy())
+print('Producers Accuracy (4.1 vs Specialist)',cf41.producersAccuracy())
 ```
