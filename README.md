@@ -132,4 +132,4 @@ print('Producers Accuracy (4.1 vs Specialist)',cf41.producersAccuracy())
 ```
 
 ## Material Suplementar
-Para mais informações sobre as estatisticas calculadas e os gráficos gerados descritivos da distribuição espacial de PeD na região Sul brasileira, consultar os arquivos, em formato .xlsx (excel format), [south_stats.xlsx]() e [counties_v2.xlsx](). O primeiro apresenta as informações em nível estadual, e o segundo, em nível municipal.
+Para mais informações sobre as estatisticas calculadas e os gráficos gerados descritivos da distribuição espacial de PeD na região Sul brasileira, consultar os arquivos, em formato .xlsx (excel format), [south_stats.xlsx](https://github.com/MariaLuize/Deteccao_PeD_13Anos_ML/blob/main/Supplementary%20Material/south_stats.xlsx) e [counties_v2.xlsx](https://github.com/MariaLuize/Deteccao_PeD_13Anos_ML/blob/main/Supplementary%20Material/counties_v2.xlsx). O primeiro apresenta as informações em nível estadual, e o segundo, em nível municipal.
