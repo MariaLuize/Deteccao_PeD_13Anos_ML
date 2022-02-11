@@ -130,3 +130,6 @@ print('Accuracy (4.1 vs Specialist)',cf41.accuracy())
 print('Consumers Accuracy (4.1 vs Specialist)',cf41.consumersAccuracy())
 print('Producers Accuracy (4.1 vs Specialist)',cf41.producersAccuracy())
 ```
+
+## Material Suplementar
+Para mais informações sobre as estatisticas calculadas e os gráficos gerados descritivos da distribuição espacial de PeD na região Sul brasileira, consultar os arquivos, em formato .xlsx (excel format), [south_stats.xlsx]() e [counties_v2.xlsx](). O primeiro apresenta as informações em nível estadual, e o segundo, em nível municipal.
